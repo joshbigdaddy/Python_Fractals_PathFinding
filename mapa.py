@@ -1,6 +1,7 @@
 import pygame
 import random
 import color_mapa
+import math
 
 VACIO  = 0
 MURO = 1
@@ -12,14 +13,15 @@ colores_mapa =   {
             }
 
 #JUGADOR = pygame.image.load('jugador.png')
-def manhattan(ori,dest):
-    (x,y)=ori
-    (x2,y2)=dest
-    return abs(x-x2)+abs(y-y2)
 
 def distancia(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
+class Celda:
+    def __init__(self,camino,coste_acum,actual,cerrados):
+        self.camino=camino
+        self.coste_acum = coste_acum
+        self.actual = actual
+        self.cerrados=cerrados
 class Mapa:
     def __init__(self, ancho_mapa, alto_mapa, lado_celda):
         self.ancho_mapa = ancho_mapa
@@ -92,23 +94,6 @@ class Mapa:
         camino = []
         
         return camino
-    
-    def A_star(self,father,child,ori,dest,h,g,close):
-        closed_list = []
-        closed_list += close
-        h +=g
-        abiertos=self.abiertos(child)
-        abiertos=sorted(abiertos,key=lambda x: manhattan(child,x))
-        for celda in abiertos:
-            if abiertos not in closed_list:
-                closed_list.append(celda)
-                if(celda!=dest):
-                    closed_list =self.A_star(child,celda,ori,dest,h,manhattan(child,celda),closed_list)
-                else:
-                    break
-        
-        return closed_list
-        
 
 
     def depth(self,origen,destino,path):
@@ -139,7 +124,28 @@ class Mapa:
         pygame.draw.rect(self.pantalla, color,
                          (y * self.lado_celda, x * self.lado_celda, self.lado_celda, self.lado_celda))
 
-
+    
+    def A_star(self,origen,destino,path):
+        coste_acum = len(path)
+        closed = []
+        if origen==destino:
+            return path
+        else :
+            closed = [origen]
+            path = [origen]
+            opened = self.abiertos(origen)
+            min_f = math.inf
+            min_pos = origen
+            for op in opened:
+                if op not in closed:
+                    a=distancia(op,destino)
+                    if(a<min_f):
+                        min_f=a
+                        mid_pos=op
+            closed.append(min_pos)
+            
+            
+            
 
 if __name__ == '__main__':
 
@@ -165,19 +171,3 @@ if __name__ == '__main__':
     pygame.display.update()
     pygame.time.wait(1000)
 
-'''    def buscar_camino(self, origen, destino):
-        camino = []
-        opened = self.abiertos(origen)
-        self.mapa[origen] = ROJO
-        close = [origen]
-        opened=sorted(opened,key=lambda x: manhattan(origen,x))
-        print(opened)
-        for vecino in opened:
-            m=manhattan(vecino,origen)
-            close = self.A_star(origen,vecino,origen,destino,0,m,close)
-            if destino in close:
-                break
-            
-        camino=close
-        return camino
-'''

@@ -29,7 +29,7 @@ class Monstruo():
         self.vida = 10
         self.armadura = 2
         self.turno = 0
-
+        self.M = 3
         self.switcher = {
             Estado.PATRULLAR: self.patrullar,
             Estado.BUSCAR: self.buscar,
@@ -62,17 +62,23 @@ class Monstruo():
         pass
 
     def patrullar(self):
-        pass
+        self.posicion = mapa.abiertos(self.posicion)[0]
 
     def atacar(self):
         return (random.randint(0, 7))
 
     def defender(self, ataque):
-        pass
+        if(ataque > self.armadura):
+            self.vida -= (ataque-self.armadura)
+        if(self.vida<0):
+            self.estado = Estado.MUERTO
+        elif(self.vida<M):
+            self.estado = Estado.HUIR
 
     def luchar(self):
-        pass
-
+        if(Jugador.posicion in mapa.abiertos(self.posicion)):
+            Jugador.defender(atacar(self))
+        
     def actualizar(self):
         pass
 
@@ -90,8 +96,7 @@ class Jugador():
 
     def defender(self, ataque):
         if(ataque > self.armadura):
-            self.vida -= (ataque-self.armadura)
-
+            self.vida -= (ataque-self.armadura)            
 
     def actualizar(self, events):
         for event in events:
@@ -133,8 +138,8 @@ class Jugador():
 
 
 mapa = Mapa(ANCHO_MAPA,ALTO_MAPA,LADO_CELDA)
-#mapa.generar_aleatorio()
-#mapa.generar_automata()
+mapa.generar_aleatorio()
+mapa.generar_automata()
 
 
 jugador = Jugador((0,0))
